@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}All Done{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>No more items to review</h2>
+  <p>Great job! There are currently no pending predictions to review.</p>
+  <a class="btn" href="{% url 'dashboard' %}">Go to Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Review · Product {{ prediction.product_id }}{% endblock %}
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h4">Product {{ prediction.product_id }} — Review AI Reasons</h2>
+    <p class="text-muted small mb-3">Created: {{ prediction.created_at }} · Assigned to you</p>
+    {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="vstack gap-3">
+        {% for r in reasons %}
+        <div class="border rounded p-3 bg-body-tertiary">
+          <div class="small text-muted mb-1">reason_id: <strong>{{ r.reason_id }}</strong> · confidence: {{ r.confidence }}</div>
+          <p class="mb-3">{{ r.explanation }}</p>
+          <div class="mb-3">
+            <label class="form-label">Decision</label>
+            <select class="form-select" name="reason_{{ r.id }}_decision" required>
+              <option value="">-- choose --</option>
+              <option value="confirmed">Confirm ✅</option>
+              <option value="overridden">Override ❌</option>
+            </select>
+          </div>
+          <div class="mb-0">
+            <label class="form-label">Corrected explanation (optional)</label>
+            <textarea class="form-control" name="reason_{{ r.id }}_explanation" rows="3" placeholder="Provide a corrected/clearer explanation if overriding or clarifying."></textarea>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No reasons found for this prediction.</p>
+        {% endfor %}
+      </div>
+      <div class="mt-3">
+        <label class="form-label">Summary notes (optional)</label>
+        <textarea class="form-control" name="summary_notes" rows="3" placeholder="Any additional notes..."></textarea>
+      </div>
+      <div class="mt-3 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Submit & Next</button>
+        <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Back to Dashboard</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
