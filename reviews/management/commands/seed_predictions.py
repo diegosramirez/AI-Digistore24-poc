@@ -24,7 +24,6 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("Cleared existing review data."))
         # Create demo supporter users
         user_specs = [
-            ("support", "support123"),
             ("John", "pass123"),
             ("Jane", "pass123"),
             ("Anthony", "pass123"),
