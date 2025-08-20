@@ -1,4 +1,4 @@
-Digistore24 — Product Approval Support Tool (≤ 4 h)
+Digistore24 — Product Approval Support Tool
 
 ## 🎯 Objective
 
@@ -36,7 +36,6 @@ Open http://127.0.0.1:8000/
 
 ## 👤 Demo Accounts
 
-- support / support123
 - John / pass123
 - Jane / pass123
 - Anthony / pass123
