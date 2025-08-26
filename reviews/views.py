@@ -1,8 +1,10 @@
+import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.contrib.auth import logout
+from django.http import Http404
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -13,15 +15,23 @@ from .models import ProductPrediction, RejectionReasonPrediction, Review, Review
 from .services import claim_oldest_available, ensure_assigned, submit_review
 from .serializers import ProductPredictionSerializer
 
+logger = logging.getLogger(__name__)
+
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def ingest_prediction(request):
-    serializer = ProductPredictionSerializer(data=request.data)
-    if serializer.is_valid():
-        prediction = serializer.save()
-        return Response({"id": prediction.id}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        serializer = ProductPredictionSerializer(data=request.data)
+        if serializer.is_valid():
+            prediction = serializer.save()
+            logger.info(f"Created prediction {prediction.id} for product {prediction.product_id}")
+            return Response({"id": prediction.id}, status=status.HTTP_201_CREATED)
+        logger.warning(f"Invalid prediction data: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        logger.error(f"Error creating prediction: {str(e)}")
+        return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @login_required

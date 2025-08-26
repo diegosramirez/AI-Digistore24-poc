@@ -7,11 +7,17 @@ User = get_user_model()
 
 class ProductPrediction(models.Model):
     product_id = models.CharField(max_length=64, db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     # assignment/locking
-    assigned_to = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='assigned_predictions')
+    assigned_to = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='assigned_predictions', db_index=True)
     locked_at = models.DateTimeField(null=True, blank=True)
-    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['assigned_to', 'reviewed_at']),
+            models.Index(fields=['created_at', 'assigned_to']),
+        ]
 
     def __str__(self):
         return f"Prediction for product {self.product_id}"
